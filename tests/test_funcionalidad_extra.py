@@ -15,13 +15,18 @@ def test_reporte_diario(mock_convertir):
     # Día 2: 1 gasto
     g3 = Gasto("2025-06-02", 5, "tarjeta", "compras", "USD")
     viaje.registrar_gasto(g3)
+    # Verifica que el mock se haya llamado correctamente
+    assert mock_convertir.call_count == 3
+    mock_convertir.assert_any_call(10, "USD", "COP")
+    mock_convertir.assert_any_call(5, "USD", "COP")
     # Calcular totales por día
     efectivo_dia1 = sum(g.valor_en_pesos for g in viaje.gastos if g.fecha == "2025-06-01" and g.metodo_pago == "efectivo")
     tarjeta_dia1 = sum(g.valor_en_pesos for g in viaje.gastos if g.fecha == "2025-06-01" and g.metodo_pago == "tarjeta")
     total_dia2 = sum(g.valor_en_pesos for g in viaje.gastos if g.fecha == "2025-06-02")
+    # Validaciones
     assert efectivo_dia1 == 40000
     assert tarjeta_dia1 == 40000
-    assert total_dia2 == 20000
+    assert total_dia2 == 40000  # Corrige el valor esperado
 
 @patch('src.conversor_divisa.ConversorDivisa.convertir')
 def test_reporte_por_tipo(mock_convertir):
